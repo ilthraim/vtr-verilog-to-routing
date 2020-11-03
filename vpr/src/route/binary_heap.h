@@ -37,7 +37,7 @@ class BinaryHeap : public HeapInterface {
     t_heap** heap_;    /* Indexed from [1..heap_size] */
     size_t heap_size_; /* Number of slots in the heap array */
     size_t heap_tail_; /* Index of first unused slot in the heap array */
-
+    size_t heap_max_size_;
     size_t max_index_;
     size_t prune_limit_;
 };

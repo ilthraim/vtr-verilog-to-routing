@@ -10,6 +10,7 @@ BinaryHeap::BinaryHeap()
     : heap_(nullptr)
     , heap_size_(0)
     , heap_tail_(0)
+    , heap_max_size_(0)
     , max_index_(std::numeric_limits<size_t>::max())
     , prune_limit_(std::numeric_limits<size_t>::max()) {}
 
@@ -29,6 +30,7 @@ void BinaryHeap::free(t_heap* hptr) {
 //       because there is no C++ equivalent.
 void BinaryHeap::init_heap(const DeviceGrid& grid) {
     size_t target_heap_size = (grid.width() - 1) * (grid.height() - 1);
+    VTR_LOG("Heap initialized\n");
     if (heap_ == nullptr || heap_size_ < target_heap_size) {
         if (heap_ != nullptr) {
             // coverity[offset_free : Intentional]
@@ -43,6 +45,9 @@ void BinaryHeap::init_heap(const DeviceGrid& grid) {
 }
 
 void BinaryHeap::add_to_heap(t_heap* hptr) {
+    if (size() + 1 > heap_max_size_) {
+      heap_max_size_ = size() + 1;
+    }
     expand_heap_if_full();
     // start with undefined hole
     ++heap_tail_;
@@ -92,6 +97,7 @@ t_heap* BinaryHeap::get_heap_head() {
 }
 
 void BinaryHeap::empty_heap() {
+    VTR_LOG("Heap emptied with max size %d \n", heap_max_size_);
     for (size_t i = 1; i < heap_tail_; i++)
         free(heap_[i]);
 
@@ -125,7 +131,7 @@ void BinaryHeap::build_heap() {
         sift_down(i);
 }
 
-void BinaryHeap::set_prune_limit(size_t max_index, size_t prune_limit) {
+  void BinaryHeap::set_prune_limit(size_t max_index, size_t prune_limit) {
     if (prune_limit != std::numeric_limits<size_t>::max()) {
         VTR_ASSERT(max_index < prune_limit);
     }
